@@ -2,7 +2,7 @@
 :local Daysbefore 30
 
 # Uncomment the line below if you have a public DNS hostname configured
-#:local dnsName mydomain.example.com
+#:local dnsName host.mydomain.com
 
 
 :if ( [:len $dnsName] = 0 ) do={ 
