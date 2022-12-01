@@ -1,0 +1,44 @@
+:local dnsName
+:local Daysbefore 30
+
+# Uncomment the line below if you have a public DNS hostname configured
+#:local dnsName mydomain.example.com
+
+
+:if ( [:len $dnsName] = 0 ) do={ 
+
+     # Check IP Cloud #
+     :if ( ![/ip cloud/ get ddns-enabled] ) do={
+          :log error "[Letsencrypt_OSScript] - IP Cloud not enable - Waiting... "
+          /ip cloud set ddns-enabled=yes update-time=yes
+          /ip cloud force-update
+
+     }
+     :log info "CloudIP"
+     :local dnsName [:put [/ip cloud get dns-name]]
+
+}
+
+:if ( ([/certificate/print count-only where common-name =$dnsName] = 0 ) || ( ([/certificate/print count-only where common-name=$dnsName] > 0) && ([/certificate/get value-name=days-valid [find common-name=$dnsName]] <  $Daysbefore) ) ) do={
+
+     # Get LetsEncrypt certificate #
+     :if ( [/certificate enable-ssl-certificate dns-name=$dnsName] = 0 ) do={
+          :log info "[Letsencrypt_OSScript] - Certificate Updated"
+     } else={
+          :log error "[Letsencrypt_OSScript] - Error in certificate generation - Try to open port in firewall and enable service"
+          :delay 5000ms;
+          /ip firewall/filter/add chain=input dst-port=80 protocol=tcp action=accept place-before=0 comment="LetsEncrypt_OSScript"
+          /ip service enable [find port=80]
+          :if ( [/certificate enable-ssl-certificate dns-name=$dnsName] = 0 ) do={
+              :log info "[Letsencrypt_OSScript] - Certificate Updated - Close doors"
+          } else={
+              :log error "[Letsencrypt_OSScript] - Unable to generate certification - Close doors"
+          }
+     }
+     # Remove custom firewall roule and disable services #
+     /ip firewall/filter/remove [find comment="LetsEncrypt_OSScript"]
+     /ip service disable [find port=80];
+
+} else={
+        :log info "[Letsencrypt_OSScript] - Nothing to do!"
+}
