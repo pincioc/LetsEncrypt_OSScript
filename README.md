@@ -1,9 +1,9 @@
 # Mikrotik LetsEncrypt_OSScript
-This script permit the generation and renew of certificate provide by Let's Encrypt on Mikrotik device
+This script automates the generation and renew of certificate provide by Let's Encrypt on Mikrotik device
+
 Requirement:
  - RouterOS v.7
  - Public IP on WAN Interface or port 80 forward 
-
 
 
 Create a new script named LetsEncrypt_OSScript, copy the code form LetsEncrypt_OSScript.txt file and define a scheduler batch (in thi example every day):
