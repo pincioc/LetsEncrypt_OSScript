@@ -3,7 +3,7 @@ This script automates the generation and renew of certificate provide by Let's E
 
 Requirements:
  - RouterOS v.7
- - Public IP on WAN Interface or port 80 forward 
+ - Public IP on WAN Interface or port 80 TCP forward 
 
 
 Create a new script named LetsEncrypt_OSScript, copy the code from LetsEncrypt_OSScript.txt file and define a scheduler batch (in this example every day at 02:00 AM):
