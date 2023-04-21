@@ -1,9 +1,9 @@
 :local dnsName
-:local Daysbefore 30
+#Use d for days or w for weeks at the end of variable value
+:local Daysbefore 30d 
 
 # Uncomment the line below if you have a public DNS hostname configured
-#:local dnsName host.mydomain.com
-
+:local dnsName host.mydomain.com
 
 :if ( [:len $dnsName] = 0 ) do={ 
 
@@ -19,7 +19,9 @@
 
 }
 
-:if ( ([/certificate/print count-only where common-name =$dnsName] = 0 ) || ( ([/certificate/print count-only where common-name=$dnsName] > 0) && ([/certificate/get value-name=days-valid [find common-name=$dnsName]] <  $Daysbefore) ) ) do={
+:do { :local cert [/certificate get [find common-name=$dnsName]] } on-error={ :local cert "" }
+
+:if ( [:len $cert] = 0 || [get $cert expires-after] <  $Daysbefore ||  [get $cert expired] )  do={
 
      # Get LetsEncrypt certificate #
      :if ( [/certificate enable-ssl-certificate dns-name=$dnsName] = 0 ) do={
